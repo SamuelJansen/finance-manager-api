@@ -11,6 +11,8 @@ local-config.yml
 *-swagger.json
 example*.txt
 *example.txt
+*example.*
+*example*.*
 dummydata/
 temp/
 migrations.yml

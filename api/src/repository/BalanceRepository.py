@@ -1,11 +1,11 @@
 from python_framework import SqlAlchemyProxy as sap
 from python_framework import Repository
 
-from model import Investment
+from model import Balance
 
 
-@Repository(model = Investment.Investment)
-class InvestmentRepository:
+@Repository(model = Balance.Balance)
+class BalanceRepository:
 
     def save(self, model):
         return self.repository.saveAndCommit(model)
@@ -37,9 +37,6 @@ class InvestmentRepository:
     def findAllByIdIn(self, idList):
         return self.repository.findAllByIdInAndCommit(idList)
 
-    def findAllByQuery(self, query):
-        return self.repository.findAllByQueryAndCommit(query, self.model)
-
     def existsById(self, id):
         return self.repository.existsByIdAndCommit(id, self.model)
 
@@ -54,23 +51,5 @@ class InvestmentRepository:
         self.repository.session.commit()
         return self.repository.load(modelList)
 
-    def findAllByKeyAndTypeIn(self, key, typeList):
-        modelList = self.repository.session.query(self.model).filter(
-            sap.and_(
-                self.model.key == key,
-                self.model.type.in_(typeList)
-            )
-        ).all()
-        self.repository.session.commit()
-        return self.repository.load(modelList)
-
-
-    def findAllByKeyInAndTypeIn(self, keyList, typeList):
-        modelList = self.repository.session.query(self.model).filter(
-            sap.and_(
-                self.model.key.in_(keyList),
-                self.model.type.in_(typeList)
-            )
-        ).all()
-        self.repository.session.commit()
-        return self.repository.load(modelList)
+    def findAllByQuery(self, query):
+        return self.repository.findAllByQueryAndCommit(query, self.model)
