@@ -20,6 +20,18 @@ class TransactionService:
         return self.mapper.transaction.fromModelListToResponseDtoList(self.saveAllModel(modelList))
 
 
+    @ServiceMethod(requestClass=[TransactionDto.TransactionRequestDto])
+    def createScheaduled(self, dto):
+        model = self.mapper.transaction.buildNewScheaduledModel(dto)
+        return self.mapper.transaction.fromModelToResponseDto(self.saveModel(model))
+
+
+    @ServiceMethod(requestClass=[[TransactionDto.TransactionRequestDto]])
+    def createAllScheaduled(self, dtoList):
+        modelList = self.mapper.transaction.buildNewScheaduledModelList(dtoList)
+        return self.mapper.transaction.fromModelListToResponseDtoList(self.saveAllModel(modelList))
+
+
     @ServiceMethod(requestClass=[TransactionDto.ExecutableTransactionRequestDto])
     def execute(self, dto):
         transactionExecutable = self.service.executor.validateNotInProcessAndAdd(

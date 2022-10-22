@@ -56,3 +56,8 @@ class BalanceService:
     @ServiceMethod(requestClass=[[Balance.Balance]])
     def saveAllModel(self, modelList):
         return self.repository.balance.saveAll(modelList)
+
+
+    @ServiceMethod(requestClass=[str])
+    def deleteByKey(self, key):
+        self.repository.balance.deleteByKey(key)

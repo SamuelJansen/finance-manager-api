@@ -1,5 +1,5 @@
 from python_helper import DateTimeHelper
-from python_framework import Mapper, MapperMethod, EnumItem, StaticConverter
+from python_framework import Mapper, MapperMethod, StaticConverter
 
 from enumeration.TransactionType import TransactionType
 from enumeration.TransactionStatus import TransactionStatus
@@ -25,11 +25,17 @@ class TransactionMapper:
     def fromModelToResponseDto(self, model, dto):
         return dto
 
-    @MapperMethod(requestClass=[TransactionDto.TransactionRequestDto, EnumItem], responseClass=[Transaction.Transaction])
-    def buildNewScheaduledTransaction(self, dto, type, model):
-        model.type = type
+    @MapperMethod(requestClass=[TransactionDto.TransactionRequestDto], responseClass=[Transaction.Transaction])
+    def buildNewScheaduledModel(self, dto, model):
         model.status = TransactionStatus.SCHEADULED if model.transactionAt > DateTimeHelper.now() else TransactionStatus.PROCESSING
         return model
+
+    @MapperMethod(requestClass=[[TransactionDto.TransactionRequestDto]])
+    def buildNewScheaduledModelList(self, dtoList):
+        return [
+            self.buildNewScheaduledModel(dto)
+            for dto in dtoList
+        ]
 
     @MapperMethod(requestClass=[Transaction.Transaction, TransactionDto.ExecutableTransactionRequestDto])
     def overrideToExecute(self, model, dto):

@@ -1,10 +1,10 @@
 from python_helper import DateTimeHelper
 from python_framework import Service, ServiceMethod
 
-from constant import InvestmentConstant, MathConstant
+from constant import InvestmentConstant
 from enumeration.InvestmentType import InvestmentType
 from enumeration.TransactionType import TransactionType
-from helper.static import MathStaticHelper
+from helper.static import LoanInvestmentStaticHelper
 from dto import InvestmentDto, TransactionDto
 from model import Investment
 
@@ -15,13 +15,8 @@ class LoanInvestmentService:
     @ServiceMethod(requestClass=[InvestmentDto.LoanInvestmentRequestDto])
     def create(self, dto):
         investmentDto = self.createInvestment(dto)
-        transactionDtoList = []
-        if InvestmentType.LOAN_12R == investmentDto.type:
-            transactionDtoList = self.scheaduleTransactions(investmentDto, 12)
-        if InvestmentType.LOAN_10R == investmentDto.type:
-            transactionDtoList = self.scheaduleTransactions(investmentDto, 10)
+        transactionDtoList = self.createTransactionList(investmentDto)
         return self.mapper.loanInvestment.toResponseDto(investmentDto, transactionDtoList)
-
 
     @ServiceMethod(requestClass=[InvestmentDto.LoanInvestmentQueryRequestDto])
     def findByQuery(self, paramDto):
@@ -44,18 +39,8 @@ class LoanInvestmentService:
         return self.mapper.loanInvestment.toResponseDtoList(investmentDtoList, transactionDtoList)
 
 
-    @ServiceMethod(requestClass=[[InvestmentDto.InvestmentResponseDto]])
-    def getInvestmentTransactionDtoList(self, investmentDtoList):
-        operationKeyList = list(set([
-            investmentDto.key
-            for investmentDto in investmentDtoList
-        ]))
-        return self.service.transaction.findAllByOperationKeyIn(operationKeyList)
-
-
     @ServiceMethod(requestClass=[InvestmentDto.LoanInvestmentRequestDto])
     def createInvestment(self, dto):
-        print(self.getExpectedTotalReturn(dto))
         return self.service.investment.create(
             InvestmentDto.InvestmentRequestDto(
                 key = dto.key,
@@ -69,67 +54,47 @@ class LoanInvestmentService:
         )
 
 
-    @ServiceMethod(requestClass=[InvestmentDto.InvestmentRequestDto, int])
+    @ServiceMethod(requestClass=[InvestmentDto.InvestmentResponseDto])
+    def createTransactionList(self, investmentDto):
+        if investmentDto.type in InvestmentConstant.LOAN_INVESTMENT_LIST:
+            totalReturns = LoanInvestmentStaticHelper.parseTotalReturns(investmentDto.type.enumName)
+            return self.scheaduleTransactions(investmentDto, totalReturns)
+
+
+    @ServiceMethod(requestClass=[[InvestmentDto.InvestmentResponseDto]])
+    def getInvestmentTransactionDtoList(self, investmentDtoList):
+        operationKeyList = LoanInvestmentStaticHelper.getUniqueOperationKeyList(investmentDtoList)
+        return self.service.transaction.findAllByOperationKeyIn(operationKeyList)
+
+
+    @ServiceMethod(requestClass=[InvestmentDto.InvestmentResponseDto, int])
     def scheaduleTransactions(self, investmentDto, totalReturns):
-        expectedReturnPerTransaction = MathStaticHelper.round(investmentDto.expectedReturn / totalReturns)
-        print(f'{investmentDto.expectedReturn=}')
-        print(f'{totalReturns=}')
-        print(f'{expectedReturnPerTransaction=}')
+        expectedReturnPerTransaction = self.helper.loanInvestment.getExpectedReturnPerTransaction(investmentDto, totalReturns)
         return [
-            self.service.transaction.create(
-                self.mapper.transaction.buildNewScheaduledTransaction(
-                    TransactionDto.TransactionRequestDto(
-                        operationKey = investmentDto.key,
-                        balanceKey = investmentDto.balanceKey,
-                        value = -1 * investmentDto.value,
-                        transactionAt = DateTimeHelper.now()
-                    ),
-                    TransactionType.INVESTMENT
+            self.service.transaction.createScheaduled(
+                TransactionDto.TransactionRequestDto(
+                    operationKey = investmentDto.key,
+                    balanceKey = investmentDto.balanceKey,
+                    value = -1 * investmentDto.value,
+                    transactionAt = self.helper.loanInvestment.getTransactionAt(investmentDto, InvestmentConstant.LOAN_APPORT_TRANSACTION),
+                    type = TransactionType.INVESTMENT
                 )
             ),
-            *self.service.transaction.createAll([
-                self.mapper.transaction.buildNewScheaduledTransaction(
-                    TransactionDto.TransactionRequestDto(
-                        operationKey = investmentDto.key,
-                        balanceKey = investmentDto.balanceKey,
-                        value = self.getNthInvestmentReturnValue(investmentDto, expectedReturnPerTransaction, totalReturns, nthReturn),
-                        transactionAt = DateTimeHelper.of(
-                            date=DateTimeHelper.dateOf(dateTime=self.getReturnDate(investmentDto, nthReturn)),
-                            time=DateTimeHelper.timeOf(dateTime=investmentDto.startAt)
-                        )
-                    ),
-                    TransactionType.INVESTMENT_RETURN
+            *self.service.transaction.createAllScheaduled([
+                TransactionDto.TransactionRequestDto(
+                    operationKey = investmentDto.key,
+                    balanceKey = investmentDto.balanceKey,
+                    value = self.helper.loanInvestment.getNthInvestmentReturnValue(investmentDto, expectedReturnPerTransaction, totalReturns, nthReturn),
+                    transactionAt = self.helper.loanInvestment.getTransactionAt(investmentDto, nthReturn),
+                    type = TransactionType.INVESTMENT_RETURN
                 )
-                for nthReturn in range(1, totalReturns + 1)
+                for nthReturn in LoanInvestmentStaticHelper.getTotalReturnsRange(totalReturns)
             ])
         ]
 
 
     @ServiceMethod(requestClass=[InvestmentDto.LoanInvestmentRequestDto])
     def getExpectedTotalReturn(self, dto):
-        print('    ', dto.value)
-        print('    ', self.service.history.getPercentualByIvestmentType(dto.type))
-        print('    ', (self.service.history.getPercentualByIvestmentType(dto.type) + MathConstant.ONE_HUNDRED_PERCENT) / MathConstant.ONE_HUNDRED_PERCENT)
-        print('    ', self.service.risk.getPercentualByIvestmentType(dto.type))
-        print('    ', self.service.risk.getPercentualByIvestmentType(dto.type) / MathConstant.ONE_HUNDRED_PERCENT)
-        return MathStaticHelper.round(
-            dto.value * (
-                (self.service.history.getPercentualByIvestmentType(dto.type) + MathConstant.ONE_HUNDRED_PERCENT) / MathConstant.ONE_HUNDRED_PERCENT)
-            ) * (
-                self.service.risk.getPercentualByIvestmentType(dto.type) / MathConstant.ONE_HUNDRED_PERCENT
-            )
-
-
-    @ServiceMethod(requestClass=[InvestmentDto.InvestmentRequestDto, float, int, int])
-    def getNthInvestmentReturnValue(self, investmentDto, expectedReturnPerTransaction, totalReturns, nthReturn):
-        print(f'        {expectedReturnPerTransaction=}')
-        print(f'        {nthReturn=}')
-        print(f'        {totalReturns=}')
-        print(f'        {investmentDto.expectedReturn}')
-        return expectedReturnPerTransaction if nthReturn > 1 else investmentDto.expectedReturn - (totalReturns - 1) * expectedReturnPerTransaction
-
-
-    @ServiceMethod(requestClass=[InvestmentDto.InvestmentResponseDto, int])
-    def getReturnDate(self, investmentDto, nthReturn):
-        date = DateTimeHelper.dateOf(dateTime=DateTimeHelper.plusMonths(investmentDto.startAt, months=nthReturn))
-        return DateTimeHelper.of(date=date, time=DateTimeHelper.DEFAULT_TIME_END)
+        historicPercentualReturn = self.service.history.getPercentualByIvestmentType(dto.type)
+        percentualRisk = self.service.risk.getPercentualByIvestmentType(dto.type)
+        return self.helper.loanInvestment.getExpectedTotalReturn(dto, historicPercentualReturn, percentualRisk)
