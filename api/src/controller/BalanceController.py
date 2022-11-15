@@ -1,6 +1,6 @@
 from python_framework import Controller, ControllerMethod, HttpStatus
 
-# from ApiKeyContext import ApiKeyContext
+from SecurityContext import SecurityContext
 from dto import BalanceDto
 
 @Controller(
@@ -13,7 +13,7 @@ from dto import BalanceDto
 class BalanceController:
 
     @ControllerMethod(url = '/<string:key>',
-        # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
         responseClass=[]
     )
     def delete(self, key=None):
@@ -30,7 +30,7 @@ class BalanceController:
 class BalanceAllController:
 
     @ControllerMethod(url = '/all',
-        # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
         responseClass=[[BalanceDto.BalanceResponseDto]]
     )
     def get(self):
@@ -38,7 +38,7 @@ class BalanceAllController:
 
 
     @ControllerMethod(url = '/all',
-        # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
         requestClass=[[BalanceDto.BalanceRequestDto]],
         responseClass=[[BalanceDto.BalanceResponseDto]]
     )

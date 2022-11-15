@@ -53,3 +53,18 @@ class BalanceRepository:
 
     def findAllByQuery(self, query):
         return self.repository.findAllByQueryAndCommit(query, self.model)
+
+    def existsByLabelInAndUserKey(self, labelList, userKey):
+        objectExists = self.repository.session.query(sap.exists().where(
+            sap.and_(
+                self.model.userKey == userKey,
+                self.model.label.in_(labelList)
+            )
+        )).one()[0]
+        self.repository.session.commit()
+        return objectExists
+
+    def findAllByUserKey(self, userKey):
+        modelList = self.repository.session.query(self.model).filter(self.model.userKey == userKey).all()
+        self.repository.session.commit()
+        return self.repository.load(modelList)
