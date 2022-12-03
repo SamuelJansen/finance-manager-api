@@ -4,9 +4,10 @@ from python_framework import Enum, EnumItem
 @Enum()
 class TransactionTypeEnumeration:
     DEPOSIT = EnumItem()
-    INVESTMENT_RETURN = EnumItem()
 
     INVESTMENT = EnumItem()
+    INVESTMENT_RETURN = EnumItem()
+    
     PAYMENT = EnumItem()
     WITHDRAW = EnumItem()
 

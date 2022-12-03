@@ -23,6 +23,8 @@ MAX_END_DATE_TIME = DateTimeHelper.of(date=dateAhead, time=timeNow) ###- DateTim
 
 FROM_DATE_TIME_QUERY_KEY = 'fromDateTime'
 TO_DATE_TIME_QUERY_KEY = 'toDateTime'
+OPERATION_KEY_IN = 'operationKeyList'
+USER_KEY = 'userKey'
 
 DATE_TIME_QUERY_KEY_LIST = [
     FROM_DATE_TIME_QUERY_KEY,

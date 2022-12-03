@@ -1,6 +1,7 @@
 from python_framework import Controller, ControllerMethod, HttpStatus
 
 # from ApiKeyContext import ApiKeyContext
+from SecurityContext import SecurityContext
 from dto import TransactionDto
 
 @Controller(
@@ -14,6 +15,7 @@ class TransactionController:
 
     @ControllerMethod(
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
         requestClass=[TransactionDto.TransactionRequestDto],
         responseClass=[TransactionDto.TransactionResponseDto]
     )
@@ -23,6 +25,7 @@ class TransactionController:
 
     @ControllerMethod(
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
         requestParamClass=[TransactionDto.TransactionQueryDto],
         responseClass=[TransactionDto.TransactionResponseDto]
     )
@@ -41,15 +44,17 @@ class TransactionAllController:
 
     @ControllerMethod(url = '/all',
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
         requestClass=[[TransactionDto.TransactionRequestDto]],
         responseClass=[[TransactionDto.TransactionResponseDto]]
     )
-    def post(self, dto):
+    def post(self, dtoList):
         return self.service.transaction.createAll(dtoList), HttpStatus.CREATED
 
 
     @ControllerMethod(url = '/all',
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
         requestParamClass=[TransactionDto.TransactionQueryDto],
         responseClass=[[TransactionDto.TransactionResponseDto]]
     )

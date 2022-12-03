@@ -4,6 +4,7 @@ from converter.static import TransactionStaticConverter
 class TransactionRequestDto:
     def __init__(self,
         key = None,
+        userKey = None,
         operationKey = None,
         balanceKey = None,
         value = None,
@@ -12,6 +13,7 @@ class TransactionRequestDto:
         transactionAt = None
     ):
         self.key = key
+        self.userKey = userKey
         self.operationKey = operationKey
         self.balanceKey = balanceKey
         self.value = value
@@ -24,6 +26,7 @@ class TransactionRequestDto:
 class TransactionResponseDto:
     def __init__(self,
         key = None,
+        userKey = None,
         operationKey = None,
         balanceKey = None,
         value = None,
@@ -32,6 +35,7 @@ class TransactionResponseDto:
         transactionAt = None
     ):
         self.key = key
+        self.userKey = userKey
         self.operationKey = operationKey
         self.balanceKey = balanceKey
         self.value = value
@@ -44,6 +48,7 @@ class TransactionResponseDto:
 class TransactionQueryDto:
     def __init__(self,
         key = None,
+        userKey = None,
         operationKey = None,
         balanceKey = None,
         type = None,
@@ -52,6 +57,7 @@ class TransactionQueryDto:
         toDateTime = None
     ):
         self.key = key
+        self.userKey = userKey
         self.operationKey = operationKey
         self.balanceKey = balanceKey
         self.type = type
@@ -63,9 +69,11 @@ class TransactionQueryDto:
 class ExecutableTransactionRequestDto:
     def __init__(self,
         key = None,
+        userKey = None,
         value = None,
         transactionAt = None
     ):
         self.key = key
+        self.userKey = userKey
         self.value = value
         self.transactionAt = transactionAt

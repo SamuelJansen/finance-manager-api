@@ -21,18 +21,18 @@ class SecurityService:
 
     @ServiceMethod()
     def isAdmin(self):
-        return self.isAdminModel(self.getUserData())
+        return self.isAdminDomain(self.getUserData())
 
     @ServiceMethod()
     def isUser(self):
-        return self.isUserModel(self.getUserData())
+        return self.isUserDomain(self.getUserData())
 
     @ServiceMethod(requestClass=[UserData.UserData])
-    def isAdminModel(self, userData):
+    def isAdminDomain(self, userData):
         return self.containsRole(SecurityContext.ADMIN, userData)
 
     @ServiceMethod(requestClass=[UserData.UserData])
-    def isUserModel(self, userData):
+    def isUserDomain(self, userData):
         return self.containsRole(SecurityContext.USER, userData)
 
     @ServiceMethod(requestClass=[EnumItem, UserData.UserData])

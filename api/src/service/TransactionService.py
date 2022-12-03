@@ -10,30 +10,40 @@ class TransactionService:
 
     @ServiceMethod(requestClass=[TransactionDto.TransactionRequestDto])
     def create(self, dto):
-        model = self.mapper.transaction.fromRequestDtoToModel(dto)
-        return self.mapper.transaction.fromModelToResponseDto(self.saveModel(model))
+        modelList = self.createAll([dto])
+        self.validator.transaction.validateIsCreated(modelList)
+        return modelList[0]
 
 
     @ServiceMethod(requestClass=[[TransactionDto.TransactionRequestDto]])
     def createAll(self, dtoList):
+        self.validator.transaction.validateCreateAll(dtoList)
         modelList = self.mapper.transaction.fromRequestDtoListToModelList(dtoList)
-        return self.mapper.transaction.fromModelListToResponseDtoList(self.saveAllModel(modelList))
+        return self.createAllModel(modelList)
 
 
     @ServiceMethod(requestClass=[TransactionDto.TransactionRequestDto])
     def createScheaduled(self, dto):
-        model = self.mapper.transaction.buildNewScheaduledModel(dto)
-        return self.mapper.transaction.fromModelToResponseDto(self.saveModel(model))
+        modelList = self.createAllScheaduled([dto])
+        self.validator.transaction.validateIsCreated(modelList)
+        return modelList[0]
 
 
     @ServiceMethod(requestClass=[[TransactionDto.TransactionRequestDto]])
     def createAllScheaduled(self, dtoList):
+        self.validator.transaction.validateCreateAll(dtoList)
         modelList = self.mapper.transaction.buildNewScheaduledModelList(dtoList)
+        return self.createAllModel(modelList)
+
+
+    @ServiceMethod(requestClass=[[Transaction.Transaction]])
+    def createAllModel(self, modelList):
         return self.mapper.transaction.fromModelListToResponseDtoList(self.saveAllModel(modelList))
 
 
     @ServiceMethod(requestClass=[TransactionDto.ExecutableTransactionRequestDto])
     def execute(self, dto):
+        self.validator.transaction.validateExecution(dto)
         transactionExecutable = self.service.executor.validateNotInProcessAndAdd(
             self.mapper.executor.fromTransactionRequestDtoToModel(dto)
         )
@@ -47,7 +57,13 @@ class TransactionService:
 
     @ServiceMethod()
     def findAll(self):
-        return self.mapper.transaction.fromModelListToResponseDtoList(self.findAllModel())
+        userData = self.service.security.getUserData()
+        modelList = self.findAllModelByQuery(
+            TransactionDto.TransactionQueryDto(
+                userKey = userData.key
+            )
+        )
+        return self.mapper.transaction.fromModelListToResponseDtoList(modelList)
 
 
     @ServiceMethod(requestClass=[TransactionDto.TransactionQueryDto])
@@ -65,6 +81,7 @@ class TransactionService:
 
     @ServiceMethod(requestClass=[TransactionDto.TransactionQueryDto])
     def findAllModelByQuery(self, queryDto):
+        self.validator.transaction.validateFindAllByQuery(queryDto)
         query = Serializer.getObjectAsDictionary(queryDto)
         filteredQuery = {
             k: v
@@ -73,12 +90,17 @@ class TransactionService:
         }
         fromDateTime =  StaticConverter.getValueOrDefault(query.get(TransactionConstant.FROM_DATE_TIME_QUERY_KEY), TransactionConstant.MIN_START_DATE_TIME)
         toDateTime = StaticConverter.getValueOrDefault(query.get(TransactionConstant.TO_DATE_TIME_QUERY_KEY), TransactionConstant.MAX_END_DATE_TIME)
-        return self.repository.transaction.findAllByQuery(filteredQuery, fromDateTime, toDateTime)
+        return self.repository.transaction.findAllByQueryWithinTransactionDates(filteredQuery, fromDateTime, toDateTime)
 
 
     @ServiceMethod(requestClass=[[str]])
     def findAllByOperationKeyIn(self, operationKeyList):
-        modelList = self.repository.transaction.findAllByOperationKeyIn(operationKeyList)
+        userData = self.service.security.getUserData()
+        query = {
+            TransactionConstant.OPERATION_KEY_IN: operationKeyList,
+            TransactionConstant.USER_KEY: userData.key
+        }
+        modelList = self.repository.transaction.findAllByQuery(query)
         return self.mapper.transaction.fromModelListToResponseDtoList(modelList)
 
 
@@ -105,3 +127,16 @@ class TransactionService:
     @ServiceMethod(requestClass=[[Transaction.Transaction]])
     def saveAllModel(self, modelList):
         return self.repository.transaction.saveAll(modelList)
+
+
+    @ServiceMethod(requestClass=[str])
+    def deleteByKey(self, key):
+        self.validator.transaction.validateExistsByKey(key)
+        model = self.findModelByKey(key)
+        self.validator.transaction.validateDeletion(model)
+        self.repository.transaction.deleteByKey(key)
+
+
+    @ServiceMethod(requestClass=[str])
+    def existsByKey(self, key):
+        return self.repository.transaction.existsByKey(key)

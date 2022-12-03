@@ -12,6 +12,7 @@ class Transaction(MODEL):
 
     id = sap.Column(sap.Integer(), sap.Sequence(f'{__tablename__}{sap.ID}{sap.SEQ}'), primary_key=True)
     key = sap.Column(sap.String(sap.MEDIUM_STRING_SIZE), nullable=False, unique=True)
+    userKey = sap.Column(sap.String(sap.MEDIUM_STRING_SIZE), nullable=False)
     operationKey = sap.Column(sap.String(sap.MEDIUM_STRING_SIZE), nullable=False)
     balanceKey = sap.Column(sap.String(sap.MEDIUM_STRING_SIZE), nullable=False)
     value = sap.Column(sap.Float(*ModelConstant.DEFAUTL_FLOAT_MONETARY_FORMAT), nullable=False, default=TransactionConstant.DEFAULT_VALUE)
@@ -22,6 +23,7 @@ class Transaction(MODEL):
     def __init__(self,
         id = None,
         key = None,
+        userKey = None,
         operationKey = None,
         balanceKey = None,
         value = None,
@@ -31,6 +33,7 @@ class Transaction(MODEL):
     ):
         self.id = id
         self.key = StaticConverter.getValueOrDefault(key, Serializer.newUuidAsString())
+        self.userKey = userKey
         self.operationKey = operationKey
         self.balanceKey = balanceKey
         self.value = value

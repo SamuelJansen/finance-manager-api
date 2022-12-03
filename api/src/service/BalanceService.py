@@ -26,12 +26,8 @@ class BalanceService:
 
     @ServiceMethod()
     def findAll(self):
-        modelList = []
         userData = self.service.security.getUserData()
-        if self.service.security.isAdminModel(userData):
-            modelList = self.findAllModel()
-        else:
-            modelList = self.findAllModelByUserKey(userData.key)
+        modelList = self.findAllModelByUserKey(userData.key)
         return self.mapper.balance.fromModelListToResponseDtoList(modelList)
 
 
@@ -59,6 +55,7 @@ class BalanceService:
     def findAllModel(self):
         return self.repository.balance.findAll()
 
+
     @ServiceMethod(requestClass=[[str], str])
     def existsByLabelInAndUserKey(self, labelList, userKey):
         return self.repository.balance.existsByLabelInAndUserKey(labelList, userKey)
@@ -80,6 +77,7 @@ class BalanceService:
         model = self.findModelByKey(key)
         self.validator.balance.validateDeletion(model)
         self.repository.balance.deleteByKey(key)
+
 
     @ServiceMethod(requestClass=[str])
     def existsByKey(self, key):

@@ -1,4 +1,3 @@
-from python_helper import ObjectHelper
 from python_framework import SqlAlchemyProxy as sap
 from python_framework import Repository
 
@@ -62,23 +61,14 @@ class TransactionRepository:
         self.repository.session.commit()
         return self.repository.load(modelList)
 
-    def findAllByQuery(self, query, fromDateTime, toDateTime):
-        modelList = self.repository.session.query(self.model).filter(
-            sap.and_(
+    def findAllByQueryWithinTransactionDates(self, query, fromDateTime, toDateTime):
+        return self.findAllByQuery(
+            query,
+            additionalCondition = sap.and_(
                 self.model.transactionAt >= fromDateTime,
                 self.model.transactionAt <= toDateTime
             )
-        ).filter_by(
-            **{
-                k: v
-                for k, v in query.items()
-                if ObjectHelper.isNotNone(v)
-            }
-        ).all()
-        self.repository.session.commit()
-        return self.repository.load(modelList)
+        )
 
-    def findAllByOperationKeyIn(self, operationKeyList):
-        modelList = self.repository.session.query(self.model).filter(self.model.operationKey.in_(operationKeyList)).all()
-        self.repository.session.commit()
-        return self.repository.load(modelList)
+    def findAllByQuery(self, query, additionalCondition=None):
+        return self.repository.findAllByQueryAndCommit(query, self.model, additionalCondition=additionalCondition)

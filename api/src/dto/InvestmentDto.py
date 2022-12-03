@@ -4,6 +4,7 @@ from converter.static import InvestmentStaticConverter
 class InvestmentRequestDto:
     def __init__(self,
         key = None,
+        userKey = None,
         balanceKey = None,
         value = None,
         expectedReturn = None,
@@ -13,6 +14,7 @@ class InvestmentRequestDto:
         startAt = None
     ):
         self.key = key
+        self.userKey = userKey
         self.balanceKey = balanceKey
         self.value = value
         self.expectedReturn = expectedReturn
@@ -26,6 +28,7 @@ class InvestmentRequestDto:
 class InvestmentResponseDto:
     def __init__(self,
         key = None,
+        userKey = None,
         balanceKey = None,
         value = None,
         expectedReturn = None,
@@ -35,6 +38,7 @@ class InvestmentResponseDto:
         startAt = None
     ):
         self.key = key
+        self.userKey = userKey
         self.balanceKey = balanceKey
         self.value = value
         self.type = type
@@ -48,6 +52,7 @@ class InvestmentResponseDto:
 class LoanInvestmentRequestDto:
     def __init__(self,
         key = None,
+        userKey = None,
         balanceKey = None,
         value = None,
         type = None,
@@ -55,6 +60,7 @@ class LoanInvestmentRequestDto:
         startAt = None
     ):
         self.key = key
+        self.userKey = userKey
         self.balanceKey = balanceKey
         self.value = value
         self.type = type
@@ -66,6 +72,7 @@ class LoanInvestmentRequestDto:
 class LoanInvestmentResponseDto:
     def __init__(self,
         key = None,
+        userKey = None,
         balanceKey = None,
         value = None,
         type = None,
@@ -76,6 +83,7 @@ class LoanInvestmentResponseDto:
         transactionList = None
     ):
         self.key = key
+        self.userKey = userKey
         self.balanceKey = balanceKey
         self.value = value
         self.type = type
@@ -89,15 +97,19 @@ class LoanInvestmentResponseDto:
 
 class LoanInvestmentQueryRequestDto:
     def __init__(self,
-        key = None
+        key = None,
+        userKey = None
     ):
         self.key = key
+        self.userKey = userKey
         InvestmentStaticConverter.overrideDefaultQueryValues(self)
 
 
 class LoanInvestmentQueryAllRequestDto:
     def __init__(self,
+        userKey = None,
         keyList = None
     ):
+        self.userKey = userKey
         self.keyList = keyList
         InvestmentStaticConverter.overrideDefaultQueryValues(self)

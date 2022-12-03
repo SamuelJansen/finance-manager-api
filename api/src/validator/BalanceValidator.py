@@ -1,7 +1,6 @@
 from python_helper import ObjectHelper
 from python_framework import Validator, ValidatorMethod, GlobalException, HttpStatus
 
-from enumeration.SecurityContext import SecurityContext
 from dto import BalanceDto
 from model import Balance
 
