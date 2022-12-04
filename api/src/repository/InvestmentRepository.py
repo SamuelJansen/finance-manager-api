@@ -74,3 +74,9 @@ class InvestmentRepository:
         ).all()
         self.repository.session.commit()
         return self.repository.load(modelList)
+
+    def findAllByQuery(self, query, additionalCondition=None):
+        return self.repository.findAllByQueryAndCommit(query, self.model, additionalCondition=additionalCondition)
+
+    def existsByQuery(self, query, additionalCondition=None):
+        return self.repository.existsByQueryAndCommit(query, self.model, additionalCondition=additionalCondition)

@@ -25,13 +25,15 @@ class BalanceValidator:
         userData = self.validator.security.validateAuthorizationAll([dto.userKey for dto in dtoList])
         if self.service.balance.existsByLabelInAndUserKey([dto.label for dto in dtoList], userData.key):
             raise GlobalException(message=f'''At least one balance already exists''', status=HttpStatus.BAD_REQUEST)
+        return userData
 
     @ValidatorMethod(requestClass=[BalanceDto.BalanceRequestDto])
     def validateCreate(self, dto):
         userData = self.validator.security.validateAuthorization(dto.userKey)
         if self.service.balance.existsByLabelInAndUserKey([dto.label], userData.key):
             raise GlobalException(message=f'''The {dto.label} balance already exists''', status=HttpStatus.BAD_REQUEST)
+        return userData
 
     @ValidatorMethod(requestClass=[Balance.Balance])
     def validateDeletion(self, model):
-        userData = self.validator.security.validateAuthorization(model.userKey)
+        return self.validator.security.validateAuthorization(model.userKey)

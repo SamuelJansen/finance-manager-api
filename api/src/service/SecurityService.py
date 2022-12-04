@@ -2,7 +2,7 @@ from python_helper import log
 from python_framework import Service, ServiceMethod, AuditoryUtil, SecurityManager, Serializer, EnumItem
 
 from domain import UserData
-from enumeration.SecurityContext import SecurityContext
+from domain.SecurityContext import SecurityContext
 
 
 @Service()
@@ -15,6 +15,7 @@ class SecurityService:
         userData.roleList = [
             SecurityContext.map(role)
             for role in SecurityManager.getContext(apiInstance=self.globals.api)
+            if role in SecurityContext.getItemsAsString()
         ]
         log.prettyJson(self.getUserData, 'User data', Serializer.getObjectAsDictionary(userData), logLevel=log.STATUS)
         return userData

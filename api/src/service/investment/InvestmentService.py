@@ -1,5 +1,5 @@
 from python_helper import DateTimeHelper
-from python_framework import Service, ServiceMethod, EnumItem
+from python_framework import Service, ServiceMethod, EnumItem, Serializer
 
 from enumeration.InvestmentType import InvestmentType
 from dto import InvestmentDto, TransactionDto
@@ -11,7 +11,7 @@ class InvestmentService:
 
     @ServiceMethod(requestClass=[InvestmentDto.InvestmentRequestDto])
     def create(self, dto):
-        self.validator.investment.validateDoesNotExistsBYKey(dto.key)
+        self.validator.investment.validateCreate(dto)
         model = self.saveModel(self.mapper.investment.buildNewModel(dto))
         return self.mapper.investment.fromModelToResponseDto(model)
 
@@ -23,21 +23,60 @@ class InvestmentService:
 
     @ServiceMethod(requestClass=[[EnumItem]])
     def findAllByTypeIn(self, typeList):
-        modelList = self.repository.investment.findAllByTypeIn(typeList)
+        userData = self.service.security.getUserData()
+        modelList = self.mapper.investment.fromModelListToResponseDtoList(
+            self.findAllModelByQuery(
+                InvestmentDto.InvestmentQueryAllDto(
+                    userKey = userData.key,
+                    typeList = typeList
+                )
+            )
+        )
         return self.mapper.investment.fromModelListToResponseDtoList(modelList)
 
 
     @ServiceMethod(requestClass=[str, [EnumItem]])
     def findAllByKeyAndTypeIn(self, key, typeList):
-        modelList = self.repository.investment.findAllByKeyAndTypeIn(key, typeList)
+        userData = self.service.security.getUserData()
+        modelList = self.mapper.investment.fromModelListToResponseDtoList(
+            self.findAllModelByQuery(
+                InvestmentDto.InvestmentQueryAllDto(
+                    userKey = userData.key,
+                    keyList = [key],
+                    typeList = typeList
+                )
+            )
+        )
         self.validator.investment.validateOnlyOneWasFound(modelList)
         return self.mapper.investment.fromModelToResponseDto(modelList[0])
 
 
     @ServiceMethod(requestClass=[[str], [EnumItem]])
     def findAllByKeyInAndTypeIn(self, keyList, typeList):
-        modelList = self.repository.investment.findAllByKeyInAndTypeIn(keyList, typeList)
-        return self.mapper.investment.fromModelListToResponseDtoList(modelList)
+        userData = self.service.security.getUserData()
+        return self.mapper.investment.fromModelListToResponseDtoList(
+            self.findAllModelByQuery(
+                InvestmentDto.InvestmentQueryAllDto(
+                    userKey = userData.key,
+                    keyList = keyList,
+                    typeList = typeList
+                )
+            )
+        )
+
+
+    @ServiceMethod(requestClass=[InvestmentDto.InvestmentQueryAllDto])
+    def findAllByQuery(self, queryAllDto):
+        return self.mapper.investment.fromModelListToResponseDtoList(
+            self.findAllModelByQuery(queryAllDto)
+        )
+
+
+    @ServiceMethod(requestClass=[InvestmentDto.InvestmentQueryAllDto])
+    def findAllModelByQuery(self, queryAllDto):
+        userData = self.validator.investment.validateFindAllByQuery(queryAllDto)
+        query = Serializer.getObjectAsDictionary(queryAllDto)
+        return self.repository.investment.findAllByQuery(query)
 
 
     @ServiceMethod(requestClass=[str])
@@ -58,6 +97,17 @@ class InvestmentService:
     @ServiceMethod(requestClass=[str])
     def existsByKey(self, key):
         return self.repository.investment.existsByKey(key)
+
+
+    @ServiceMethod(requestClass=[[str], str])
+    def existsByLabelInAndUserKey(self, labelList, userKey):
+        query = Serializer.getObjectAsDictionary(
+            InvestmentDto.InvestmentQueryAllDto(
+                userKey = userKey,
+                labelList = labelList
+            )
+        )
+        return self.repository.investment.existsByQuery(query)
 
 
     @ServiceMethod(requestClass=[Investment.Investment])

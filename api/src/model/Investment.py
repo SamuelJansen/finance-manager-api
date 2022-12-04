@@ -12,7 +12,9 @@ class Investment(MODEL):
 
     id = sap.Column(sap.Integer(), sap.Sequence(f'{__tablename__}{sap.ID}{sap.SEQ}'), primary_key=True)
     key = sap.Column(sap.String(sap.MEDIUM_STRING_SIZE), nullable=False, unique=True)
+    userKey = sap.Column(sap.String(sap.MEDIUM_STRING_SIZE), nullable=False)
     balanceKey = sap.Column(sap.String(sap.MEDIUM_STRING_SIZE), nullable=False)
+    label = sap.Column(sap.String(sap.MEDIUM_STRING_SIZE), nullable=False)
     value = sap.Column(sap.Float(*ModelConstant.DEFAUTL_FLOAT_MONETARY_FORMAT), nullable=False, default=InvestmentConstant.DEFAULT_VALUE)
     expectedReturn = sap.Column(sap.Float(*ModelConstant.DEFAUTL_FLOAT_MONETARY_FORMAT), nullable=False, default=InvestmentConstant.DEFAULT_VALUE)
     risk = sap.Column(sap.Float(3, 2), nullable=False, default=InvestmentConstant.DEFAULT_VALUE)
@@ -23,7 +25,9 @@ class Investment(MODEL):
     def __init__(self,
         id = None,
         key = None,
+        userKey = None,
         balanceKey = None,
+        label = None,
         value = None,
         expectedReturn = None,
         risk = None,
@@ -33,7 +37,9 @@ class Investment(MODEL):
     ):
         self.id = id
         self.key = StaticConverter.getValueOrDefault(key, Serializer.newUuidAsString())
+        self.userKey = userKey
         self.balanceKey = balanceKey
+        self.label = label
         self.value = value
         self.expectedReturn = expectedReturn
         self.risk = risk

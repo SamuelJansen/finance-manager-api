@@ -1,6 +1,7 @@
 from python_framework import Controller, ControllerMethod, HttpStatus
 
 # from ApiKeyContext import ApiKeyContext
+from domain.SecurityContext import SecurityContext
 from dto import InvestmentDto
 
 @Controller(
@@ -14,7 +15,8 @@ class LoanInvestmentController:
 
     @ControllerMethod(
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
-        requestParamClass=[InvestmentDto.LoanInvestmentQueryRequestDto],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
+        requestParamClass=[InvestmentDto.LoanInvestmentQueryDto],
         responseClass=[InvestmentDto.LoanInvestmentResponseDto]
     )
     def get(self, params=None):
@@ -22,6 +24,7 @@ class LoanInvestmentController:
 
     @ControllerMethod(
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
         requestClass=[InvestmentDto.LoanInvestmentRequestDto],
         responseClass=[InvestmentDto.LoanInvestmentResponseDto]
     )
@@ -40,7 +43,8 @@ class LoanInvestmentAllController:
 
     @ControllerMethod(url = '/all',
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
-        requestParamClass=[InvestmentDto.LoanInvestmentQueryAllRequestDto],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
+        requestParamClass=[InvestmentDto.LoanInvestmentQueryAllDto],
         responseClass=[[InvestmentDto.LoanInvestmentResponseDto]]
     )
     def get(self, params=None):

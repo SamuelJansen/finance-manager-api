@@ -1,6 +1,6 @@
 from python_framework import Service, ServiceMethod, EnumItem, StaticConverter
 
-from constant import InvestmentConstant
+from constant import InvestmentConstant, RiskConstant
 from enumeration.InvestmentType import InvestmentType
 
 LOAN_PERCENTUAL_RISK = 80.0
@@ -18,5 +18,5 @@ class RiskService:
     def getPercentualByIvestmentType(self, investmentType):
         return StaticConverter.getValueOrDefault(
             RISK_DICTIONARY.get(investmentType),
-            InvestmentConstant.DEFAULT_PERCENTUAL_RISK
+            RiskConstant.DEFAULT_PERCENTUAL_RISK
         )

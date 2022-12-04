@@ -1,6 +1,7 @@
 from python_framework import Controller, ControllerMethod, HttpStatus
 
 # from ApiKeyContext import ApiKeyContext
+from domain.SecurityContext import SecurityContext
 from dto import InvestmentDto
 
 @Controller(
@@ -14,6 +15,7 @@ class InvestmentReportAllController:
 
     @ControllerMethod(url = '/all',
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
         responseClass=[[dict]]
     )
     def get(self):

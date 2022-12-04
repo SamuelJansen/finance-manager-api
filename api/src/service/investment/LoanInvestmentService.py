@@ -1,5 +1,5 @@
-from python_helper import DateTimeHelper
-from python_framework import Service, ServiceMethod
+from python_helper import DateTimeHelper, ObjectHelper
+from python_framework import Service, ServiceMethod, StaticConverter
 
 from constant import InvestmentConstant
 from enumeration.InvestmentType import InvestmentType
@@ -18,9 +18,19 @@ class LoanInvestmentService:
         transactionDtoList = self.createTransactionList(investmentDto)
         return self.mapper.loanInvestment.toResponseDto(investmentDto, transactionDtoList)
 
-    @ServiceMethod(requestClass=[InvestmentDto.LoanInvestmentQueryRequestDto])
-    def findByQuery(self, paramDto):
-        investmentDto = self.service.investment.findAllByKeyAndTypeIn(paramDto.key, InvestmentConstant.LOAN_INVESTMENT_LIST)
+    @ServiceMethod(requestClass=[InvestmentDto.LoanInvestmentQueryDto])
+    def findByQuery(self, queryDto):
+        userData = self.service.security.getUserData()
+        investmentDtoList = self.service.investment.findAllByQuery(
+            InvestmentDto.InvestmentQueryAllDto(
+                userKey = userData.key,
+                keyList = [queryDto.key] if ObjectHelper.isNotNone(queryDto.key) else [],
+                labelList = [queryDto.label] if ObjectHelper.isNotNone(queryDto.label) else [],
+                typeList = InvestmentConstant.LOAN_INVESTMENT_LIST
+            )
+        )
+        self.validator.investment.validateOnlyOneWasFound(investmentDto)
+        investmentDto = investmentDtoList[0]
         transactionDtoList = self.getInvestmentTransactionDtoList([investmentDto])
         return self.mapper.loanInvestment.toResponseDto(investmentDto, transactionDtoList)
 
@@ -32,9 +42,9 @@ class LoanInvestmentService:
         return self.mapper.loanInvestment.toResponseDtoList(investmentDtoList, transactionDtoList)
 
 
-    @ServiceMethod(requestClass=[InvestmentDto.LoanInvestmentQueryAllRequestDto])
-    def findAllByQuery(self, paramDto):
-        investmentDtoList = self.service.investment.findAllByKeyInAndTypeIn(paramDto.keyList, InvestmentConstant.LOAN_INVESTMENT_LIST)
+    @ServiceMethod(requestClass=[InvestmentDto.LoanInvestmentQueryAllDto])
+    def findAllByQuery(self, queryDto):
+        investmentDtoList = self.service.investment.findAllByKeyInAndTypeIn(queryDto.keyList, InvestmentConstant.LOAN_INVESTMENT_LIST)
         transactionDtoList = self.getInvestmentTransactionDtoList(investmentDtoList)
         return self.mapper.loanInvestment.toResponseDtoList(investmentDtoList, transactionDtoList)
 
@@ -44,10 +54,12 @@ class LoanInvestmentService:
         return self.service.investment.create(
             InvestmentDto.InvestmentRequestDto(
                 key = dto.key,
+                userKey = dto.userKey,
                 balanceKey = dto.balanceKey,
+                label = dto.label,
+                value = dto.value,
                 startAt = dto.startAt,
                 type = dto.type,
-                value = dto.value,
                 expectedReturn = self.getExpectedTotalReturn(dto),
                 risk = self.service.risk.getPercentualByIvestmentType(dto.type),
             )
@@ -73,6 +85,7 @@ class LoanInvestmentService:
         return [
             self.service.transaction.createScheaduled(
                 TransactionDto.TransactionRequestDto(
+                    userKey = investmentDto.userKey,
                     operationKey = investmentDto.key,
                     balanceKey = investmentDto.balanceKey,
                     value = -1 * investmentDto.value,
@@ -82,6 +95,7 @@ class LoanInvestmentService:
             ),
             *self.service.transaction.createAllScheaduled([
                 TransactionDto.TransactionRequestDto(
+                    userKey = investmentDto.userKey,
                     operationKey = investmentDto.key,
                     balanceKey = investmentDto.balanceKey,
                     value = self.helper.loanInvestment.getNthInvestmentReturnValue(investmentDto, expectedReturnPerTransaction, totalReturns, nthReturn),

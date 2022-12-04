@@ -1,6 +1,6 @@
 from python_framework import Controller, ControllerMethod, HttpStatus
 
-from SecurityContext import SecurityContext
+from domain.SecurityContext import SecurityContext
 from dto import BalanceDto
 
 @Controller(

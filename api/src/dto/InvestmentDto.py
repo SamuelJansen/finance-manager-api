@@ -6,6 +6,7 @@ class InvestmentRequestDto:
         key = None,
         userKey = None,
         balanceKey = None,
+        label = None,
         value = None,
         expectedReturn = None,
         risk = None,
@@ -16,6 +17,7 @@ class InvestmentRequestDto:
         self.key = key
         self.userKey = userKey
         self.balanceKey = balanceKey
+        self.label = label
         self.value = value
         self.expectedReturn = expectedReturn
         self.risk = risk
@@ -30,6 +32,7 @@ class InvestmentResponseDto:
         key = None,
         userKey = None,
         balanceKey = None,
+        label = None,
         value = None,
         expectedReturn = None,
         risk = None,
@@ -40,6 +43,7 @@ class InvestmentResponseDto:
         self.key = key
         self.userKey = userKey
         self.balanceKey = balanceKey
+        self.label = label
         self.value = value
         self.type = type
         self.expectedReturn = expectedReturn
@@ -49,11 +53,25 @@ class InvestmentResponseDto:
         InvestmentStaticConverter.overrideDefaultValues(self)
 
 
+class InvestmentQueryAllDto:
+    def __init__(self,
+        userKey = None,
+        keyList = None,
+        labelList = None,
+        typeList = None
+    ):
+        self.userKey = userKey
+        self.keyList = keyList
+        self.labelList = labelList
+        self.typeList = typeList
+
+
 class LoanInvestmentRequestDto:
     def __init__(self,
         key = None,
         userKey = None,
         balanceKey = None,
+        label = None,
         value = None,
         type = None,
         status = None,
@@ -62,6 +80,7 @@ class LoanInvestmentRequestDto:
         self.key = key
         self.userKey = userKey
         self.balanceKey = balanceKey
+        self.label = label
         self.value = value
         self.type = type
         self.status = status
@@ -74,6 +93,7 @@ class LoanInvestmentResponseDto:
         key = None,
         userKey = None,
         balanceKey = None,
+        label = None,
         value = None,
         type = None,
         expectedReturn = None,
@@ -85,6 +105,7 @@ class LoanInvestmentResponseDto:
         self.key = key
         self.userKey = userKey
         self.balanceKey = balanceKey
+        self.label = label
         self.value = value
         self.type = type
         self.expectedReturn = expectedReturn
@@ -95,21 +116,25 @@ class LoanInvestmentResponseDto:
         InvestmentStaticConverter.overrideDefaultValues(self)
 
 
-class LoanInvestmentQueryRequestDto:
+class LoanInvestmentQueryDto:
     def __init__(self,
         key = None,
-        userKey = None
+        userKey = None,
+        label = None
     ):
         self.key = key
         self.userKey = userKey
+        self.label = label
         InvestmentStaticConverter.overrideDefaultQueryValues(self)
 
 
-class LoanInvestmentQueryAllRequestDto:
+class LoanInvestmentQueryAllDto:
     def __init__(self,
         userKey = None,
-        keyList = None
+        keyList = None,
+        labelList = None
     ):
         self.userKey = userKey
         self.keyList = keyList
+        self.labelList = labelList
         InvestmentStaticConverter.overrideDefaultQueryValues(self)
