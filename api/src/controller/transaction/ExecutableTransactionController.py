@@ -15,7 +15,7 @@ class ExecutableTransactionController:
 
     @ControllerMethod(url = '/execute',
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
-        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.FINANCES_ADMIN, SecurityContext.USER, SecurityContext.FINANCES_USER],
         requestClass=[TransactionDto.ExecutableTransactionRequestDto],
         responseClass=[TransactionDto.TransactionResponseDto]
     )

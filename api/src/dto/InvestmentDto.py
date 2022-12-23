@@ -8,7 +8,8 @@ class InvestmentRequestDto:
         balanceKey = None,
         label = None,
         value = None,
-        expectedReturn = None,
+        # expectedReturn = None,
+        # executedReturn = None,
         risk = None,
         type = None,
         status = None,
@@ -19,7 +20,8 @@ class InvestmentRequestDto:
         self.balanceKey = balanceKey
         self.label = label
         self.value = value
-        self.expectedReturn = expectedReturn
+        # self.expectedReturn = expectedReturn
+        # self.executedReturn = executedReturn
         self.risk = risk
         self.type = type
         self.status = status
@@ -34,7 +36,8 @@ class InvestmentResponseDto:
         balanceKey = None,
         label = None,
         value = None,
-        expectedReturn = None,
+        # expectedReturn = None,
+        # executedReturn = None,
         risk = None,
         type = None,
         status = None,
@@ -46,7 +49,8 @@ class InvestmentResponseDto:
         self.label = label
         self.value = value
         self.type = type
-        self.expectedReturn = expectedReturn
+        # self.expectedReturn = expectedReturn
+        # self.executedReturn = executedReturn
         self.risk = risk
         self.status = status
         self.startAt = startAt
@@ -96,7 +100,8 @@ class LoanInvestmentResponseDto:
         label = None,
         value = None,
         type = None,
-        expectedReturn = None,
+        # expectedReturn = None,
+        # executedReturn = None,
         risk = None,
         status = None,
         startAt = None,
@@ -108,7 +113,8 @@ class LoanInvestmentResponseDto:
         self.label = label
         self.value = value
         self.type = type
-        self.expectedReturn = expectedReturn
+        # self.expectedReturn = expectedReturn
+        # self.executedReturn = executedReturn
         self.risk = risk
         self.status = status
         self.startAt = startAt

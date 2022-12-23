@@ -15,7 +15,7 @@ class InvestmentReportAllController:
 
     @ControllerMethod(url = '/all',
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
-        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.FINANCES_ADMIN, SecurityContext.USER, SecurityContext.FINANCES_USER],
         responseClass=[[dict]]
     )
     def get(self):

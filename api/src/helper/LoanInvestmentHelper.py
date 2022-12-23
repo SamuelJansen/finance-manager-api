@@ -8,7 +8,7 @@ from dto import InvestmentDto
 
 class LoanInvestmentHelper:
 
-    @HelperMethod(requestClass=[InvestmentDto.LoanInvestmentRequestDto, float, float])
+    @HelperMethod(requestClass=[InvestmentDto.InvestmentResponseDto, float, float])
     def getExpectedTotalReturn(self, loanInvestmentDto, historicPercentualReturn, percentualRisk):
         return MathStaticHelper.round(
             loanInvestmentDto.value * (
@@ -18,17 +18,17 @@ class LoanInvestmentHelper:
             )
         )
 
-    @HelperMethod(requestClass=[InvestmentDto.InvestmentResponseDto, int])
-    def getExpectedReturnPerTransaction(self, investmentDto, totalReturns):
-        return MathStaticHelper.round(investmentDto.expectedReturn / totalReturns)
+    @HelperMethod(requestClass=[InvestmentDto.InvestmentResponseDto, float, int])
+    def getExpectedLoanReturnPerTransaction(self, investmentDto, expectedTotalReturn, returnsAmount):
+        return MathStaticHelper.round(expectedTotalReturn / returnsAmount)
 
 
-    @HelperMethod(requestClass=[InvestmentDto.InvestmentResponseDto, float, int, int])
-    def getNthInvestmentReturnValue(self, investmentDto, expectedReturnPerTransaction, totalReturns, nthReturn):
+    @HelperMethod(requestClass=[InvestmentDto.InvestmentResponseDto, float, float, int, int])
+    def getNthInvestmentReturnValue(self, investmentDto, expectedTotalReturn, expectedReturnPerTransaction, returnsAmount, nthReturn):
         if nthReturn > 1:
             return expectedReturnPerTransaction
         return MathStaticHelper.round(
-            investmentDto.expectedReturn - (totalReturns - 1) * expectedReturnPerTransaction
+            expectedTotalReturn - (returnsAmount - 1) * expectedReturnPerTransaction
         )
 
 

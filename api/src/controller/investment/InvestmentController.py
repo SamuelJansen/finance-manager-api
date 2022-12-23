@@ -15,7 +15,7 @@ class InvestmentController:
 
     @ControllerMethod(
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
-        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.FINANCES_ADMIN, SecurityContext.USER, SecurityContext.FINANCES_USER],
         requestClass=[InvestmentDto.InvestmentRequestDto],
         responseClass=[InvestmentDto.InvestmentResponseDto]
     )
@@ -34,8 +34,9 @@ class InvestmentAllController:
 
     @ControllerMethod(url = '/all',
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
-        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.FINANCES_ADMIN, SecurityContext.USER, SecurityContext.FINANCES_USER],
+        requestParamClass=[InvestmentDto.InvestmentQueryAllDto],
         responseClass=[[InvestmentDto.InvestmentResponseDto]]
     )
-    def get(self):
-        return self.service.investment.findAll(), HttpStatus.OK
+    def get(self, params=None):
+        return self.service.investment.findAllByQuery(params), HttpStatus.OK

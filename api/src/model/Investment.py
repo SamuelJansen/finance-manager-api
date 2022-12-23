@@ -16,8 +16,9 @@ class Investment(MODEL):
     balanceKey = sap.Column(sap.String(sap.MEDIUM_STRING_SIZE), nullable=False)
     label = sap.Column(sap.String(sap.MEDIUM_STRING_SIZE), nullable=False)
     value = sap.Column(sap.Float(*ModelConstant.DEFAUTL_FLOAT_MONETARY_FORMAT), nullable=False, default=InvestmentConstant.DEFAULT_VALUE)
-    expectedReturn = sap.Column(sap.Float(*ModelConstant.DEFAUTL_FLOAT_MONETARY_FORMAT), nullable=False, default=InvestmentConstant.DEFAULT_VALUE)
-    risk = sap.Column(sap.Float(3, 2), nullable=False, default=InvestmentConstant.DEFAULT_VALUE)
+    # expectedReturn = sap.Column(sap.Float(*ModelConstant.DEFAUTL_FLOAT_MONETARY_FORMAT), nullable=False, default=InvestmentConstant.DEFAULT_EXPECTED_RETURN)
+    # executedReturn = sap.Column(sap.Float(*ModelConstant.DEFAUTL_FLOAT_MONETARY_FORMAT))
+    risk = sap.Column(sap.Float(3, 2), nullable=False, default=InvestmentConstant.DEFAULT_PERCENTUAL_RISK)
     type = sap.Column(sap.String(sap.MEDIUM_STRING_SIZE), nullable=False, default=InvestmentConstant.DEFAULT_TYPE)
     status = sap.Column(sap.String(sap.MEDIUM_STRING_SIZE), nullable=False, default=InvestmentConstant.DEFAULT_STATUS)
     startAt = sap.Column(sap.DateTime(), nullable=False, default=DateTimeHelper.now())
@@ -29,7 +30,8 @@ class Investment(MODEL):
         balanceKey = None,
         label = None,
         value = None,
-        expectedReturn = None,
+        # expectedReturn = None,
+        # executedReturn = None,
         risk = None,
         type = None,
         status = None,
@@ -41,7 +43,8 @@ class Investment(MODEL):
         self.balanceKey = balanceKey
         self.label = label
         self.value = value
-        self.expectedReturn = expectedReturn
+        # self.expectedReturn = expectedReturn
+        # self.executedReturn = executedReturn
         self.risk = risk
         self.type = type
         self.status = status

@@ -15,7 +15,7 @@ class LoanInvestmentController:
 
     @ControllerMethod(
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
-        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.FINANCES_ADMIN, SecurityContext.USER, SecurityContext.FINANCES_USER],
         requestParamClass=[InvestmentDto.LoanInvestmentQueryDto],
         responseClass=[InvestmentDto.LoanInvestmentResponseDto]
     )
@@ -24,7 +24,7 @@ class LoanInvestmentController:
 
     @ControllerMethod(
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
-        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.FINANCES_ADMIN, SecurityContext.USER, SecurityContext.FINANCES_USER],
         requestClass=[InvestmentDto.LoanInvestmentRequestDto],
         responseClass=[InvestmentDto.LoanInvestmentResponseDto]
     )
@@ -43,7 +43,7 @@ class LoanInvestmentAllController:
 
     @ControllerMethod(url = '/all',
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
-        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.FINANCES_ADMIN, SecurityContext.USER, SecurityContext.FINANCES_USER],
         requestParamClass=[InvestmentDto.LoanInvestmentQueryAllDto],
         responseClass=[[InvestmentDto.LoanInvestmentResponseDto]]
     )

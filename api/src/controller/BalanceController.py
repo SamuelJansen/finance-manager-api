@@ -13,7 +13,7 @@ from dto import BalanceDto
 class BalanceController:
 
     @ControllerMethod(url = '/<string:key>',
-        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.FINANCES_ADMIN, SecurityContext.USER, SecurityContext.FINANCES_USER],
         responseClass=[]
     )
     def delete(self, key=None):
@@ -30,7 +30,7 @@ class BalanceController:
 class BalanceAllController:
 
     @ControllerMethod(url = '/all',
-        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.FINANCES_ADMIN, SecurityContext.USER, SecurityContext.FINANCES_USER],
         responseClass=[[BalanceDto.BalanceResponseDto]]
     )
     def get(self):
@@ -38,7 +38,7 @@ class BalanceAllController:
 
 
     @ControllerMethod(url = '/all',
-        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.FINANCES_ADMIN, SecurityContext.USER, SecurityContext.FINANCES_USER],
         requestClass=[[BalanceDto.BalanceRequestDto]],
         responseClass=[[BalanceDto.BalanceResponseDto]]
     )

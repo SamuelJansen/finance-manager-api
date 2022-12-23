@@ -15,7 +15,7 @@ class TransactionController:
 
     @ControllerMethod(
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
-        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.FINANCES_ADMIN],
         requestClass=[TransactionDto.TransactionRequestDto],
         responseClass=[TransactionDto.TransactionResponseDto]
     )
@@ -25,7 +25,7 @@ class TransactionController:
 
     @ControllerMethod(
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
-        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.FINANCES_ADMIN],
         requestParamClass=[TransactionDto.TransactionQueryDto],
         responseClass=[TransactionDto.TransactionResponseDto]
     )
@@ -44,7 +44,7 @@ class TransactionAllController:
 
     @ControllerMethod(url = '/all',
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
-        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.FINANCES_ADMIN],
         requestClass=[[TransactionDto.TransactionRequestDto]],
         responseClass=[[TransactionDto.TransactionResponseDto]]
     )
@@ -54,7 +54,7 @@ class TransactionAllController:
 
     @ControllerMethod(url = '/all',
         # apiKeyRequired=[ApiKeyContext.ADMIN, ApiKeyContext.API, ApiKeyContext.USER],
-        roleRequired=[SecurityContext.ADMIN, SecurityContext.USER],
+        roleRequired=[SecurityContext.ADMIN, SecurityContext.FINANCES_ADMIN],
         requestParamClass=[TransactionDto.TransactionQueryDto],
         responseClass=[[TransactionDto.TransactionResponseDto]]
     )

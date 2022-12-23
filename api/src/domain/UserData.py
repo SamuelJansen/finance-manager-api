@@ -5,15 +5,13 @@ class UserData:
         firstName = None,
         lastName = None,
         email = None,
-        picture = None,
-        roleList = None,
-        status = None
+        pictureUrl = None,
+        roles = None
     ):
         self.key = key
         self.name = name
         self.firstName = firstName
         self.lastName = lastName
         self.email = email
-        self.picture = picture
-        self.roleList = roleList
-        self.status = status
+        self.pictureUrl = pictureUrl
+        self.roles = roles

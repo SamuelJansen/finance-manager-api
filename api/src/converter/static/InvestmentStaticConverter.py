@@ -16,6 +16,8 @@ def overrideDefaultValues(instance, objectKeys=None):
         instance.value = StaticConverter.getValueOrDefault(instance.value if ObjectHelper.isNone(instance.value) else float(instance.value), InvestmentConstant.DEFAULT_VALUE)
     if 'expectedReturn' in objectKeys:
         instance.expectedReturn = StaticConverter.getValueOrDefault(instance.expectedReturn if ObjectHelper.isNone(instance.expectedReturn) else float(instance.expectedReturn), InvestmentConstant.DEFAULT_EXPECTED_RETURN)
+    if 'executedReturn' in objectKeys:
+        instance.executedReturn = instance.executedReturn if ObjectHelper.isNone(instance.executedReturn) else float(instance.executedReturn)
     if 'risk' in objectKeys:
         instance.risk = StaticConverter.getValueOrDefault(instance.risk if ObjectHelper.isNone(instance.risk) else float(instance.risk), InvestmentConstant.DEFAULT_PERCENTUAL_RISK)
 

@@ -29,7 +29,7 @@ class LoanInvestmentService:
                 typeList = InvestmentConstant.LOAN_INVESTMENT_LIST
             )
         )
-        self.validator.investment.validateOnlyOneWasFound(investmentDto)
+        self.validator.investment.validateOnlyOneWasFound(investmentDtoList)
         investmentDto = investmentDtoList[0]
         transactionDtoList = self.getInvestmentTransactionDtoList([investmentDto])
         return self.mapper.loanInvestment.toResponseDto(investmentDto, transactionDtoList)
@@ -60,7 +60,6 @@ class LoanInvestmentService:
                 value = dto.value,
                 startAt = dto.startAt,
                 type = dto.type,
-                expectedReturn = self.getExpectedTotalReturn(dto),
                 risk = self.service.risk.getPercentualByIvestmentType(dto.type),
             )
         )
@@ -69,8 +68,7 @@ class LoanInvestmentService:
     @ServiceMethod(requestClass=[InvestmentDto.InvestmentResponseDto])
     def createTransactionList(self, investmentDto):
         if investmentDto.type in InvestmentConstant.LOAN_INVESTMENT_LIST:
-            totalReturns = LoanInvestmentStaticHelper.parseTotalReturns(investmentDto.type.enumName)
-            return self.scheaduleTransactions(investmentDto, totalReturns)
+            return self.scheaduleTransactions(investmentDto)
 
 
     @ServiceMethod(requestClass=[[InvestmentDto.InvestmentResponseDto]])
@@ -79,9 +77,11 @@ class LoanInvestmentService:
         return self.service.transaction.findAllByOperationKeyIn(operationKeyList)
 
 
-    @ServiceMethod(requestClass=[InvestmentDto.InvestmentResponseDto, int])
-    def scheaduleTransactions(self, investmentDto, totalReturns):
-        expectedReturnPerTransaction = self.helper.loanInvestment.getExpectedReturnPerTransaction(investmentDto, totalReturns)
+    @ServiceMethod(requestClass=[InvestmentDto.InvestmentResponseDto])
+    def scheaduleTransactions(self, investmentDto):
+        expectedTotalReturn = self.getExpectedTotalReturn(investmentDto)
+        returnsAmount = self.getReturnsAmount(investmentDto)
+        expectedReturnPerTransaction = self.helper.loanInvestment.getExpectedLoanReturnPerTransaction(investmentDto, expectedTotalReturn, returnsAmount)
         return [
             self.service.transaction.createScheaduled(
                 TransactionDto.TransactionRequestDto(
@@ -98,13 +98,18 @@ class LoanInvestmentService:
                     userKey = investmentDto.userKey,
                     operationKey = investmentDto.key,
                     balanceKey = investmentDto.balanceKey,
-                    value = self.helper.loanInvestment.getNthInvestmentReturnValue(investmentDto, expectedReturnPerTransaction, totalReturns, nthReturn),
+                    value = self.helper.loanInvestment.getNthInvestmentReturnValue(investmentDto, expectedTotalReturn, expectedReturnPerTransaction, returnsAmount, nthReturn),
                     transactionAt = self.helper.loanInvestment.getTransactionAt(investmentDto, nthReturn),
                     type = TransactionType.INVESTMENT_RETURN
                 )
-                for nthReturn in LoanInvestmentStaticHelper.getTotalReturnsRange(totalReturns)
+                for nthReturn in LoanInvestmentStaticHelper.getReturnsAmountRange(returnsAmount)
             ])
         ]
+
+
+    @ServiceMethod(requestClass=[InvestmentDto.InvestmentResponseDto])
+    def getReturnsAmount(self, investmentDto):
+        return LoanInvestmentStaticHelper.parseReturnsAmount(investmentDto.type.enumName)
 
 
     @ServiceMethod(requestClass=[InvestmentDto.LoanInvestmentRequestDto])
